@@ -3,140 +3,44 @@
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <style>
-*{margin:0;padding:0;box-sizing:border-box} body{background:#000;overflow:hidden;touch-action:none}
-canvas{display:block;width:100vw;height:100vh}
-#ui{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
-#top{pointer-events:auto;display:flex;justify-content:space-between;padding:8px;background:linear-gradient(rgba(0,0,0,0.8),transparent);color:#fff;font-family:Arial Black;font-size:14px}
-#hpBar{width:100px;height:14px;background:#333;border-radius:8px;display:inline-block;vertical-align:middle;margin:0 6px;overflow:hidden} #hpF{width:85%;height:100%;background:#0f0}
-#ult{pointer-events:auto;padding:8px 16px;background:#ff0;border:3px solid #000;border-radius:10px;color:#000;font-weight:900;box-shadow:0 0 15px #ff0}
-#bot{position:absolute;bottom:10px;width:100%;display:flex;justify-content:space-between;padding:0 12px;pointer-events:auto}
-#joy{width:90px;height:90px;background:rgba(255,255,255,0.2);border:3px solid #fff;border-radius:50%;position:relative}
-#stick{position:absolute;top:50%;left:50%;width:40px;height:40px;background:rgba(255,255,255,0.5);border-radius:50%;transform:translate(-50%,-50%)}
-.b{width:100px;height:50px;border:3px solid #000;border-radius:12px;color:#fff;font-family:Arial Black;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 0 #000}
-#dash{background:#09f} #atk{background:#f22}
+*{margin:0;padding:0;box-sizing:border-box} body{background:#000;overflow:hidden;touch-action:none;font-family:Arial Black}
+#game{width:100vw;height:100vh;position:relative;overflow:hidden;background:linear-gradient(180deg,#ff7a2a 0%,#8a2a00 45%,#1a0a00 100%)}
+#bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?q=80&w=900') center/cover;opacity:0.35}
+#top{position:absolute;top:0;width:100%;padding:6px 10px;display:flex;justify-content:space-between;z-index:999;color:#fff;font-size:12px;align-items:center}
+#hpBox{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.9);border:2px solid #fff;border-radius:20px;padding:5px 12px}
+#hpBar{width:95px;height:12px;background:#222;border-radius:8px;overflow:hidden} #hpF{width:85%;height:100%;background:#0f0}
+#ult{padding:8px 16px;background:linear-gradient(#ff0,#fa0);border:3px solid #000;border-radius:12px;color:#000;font-weight:900;box-shadow:0 0 18px #ff0}
+#ground{position:absolute;bottom:0;width:100%;height:82px;background:linear-gradient(#3d2010,#1a0800);z-index:2}
+#player{position:absolute;bottom:82px;left:60px;width:115px;height:115px;z-index:20;transition:left 0.08s}
+#player img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(2px 3px 0 #000)}
+#player.running{animation:run 0.16s infinite alternate}
+@keyframes run{0%{transform:translateY(0)}100%{transform:translateY(-6px)}}
+#player.atk{animation:atk 0.28s forwards}
+@keyframes atk{0%{transform:translateX(0)}30%{transform:translateX(26px) rotate(-5deg) scale(1.25)}100%{transform:translateX(0)}}
+.enemy{position:absolute;bottom:82px;z-index:15;will-change:left;animation:zRun 0.25s infinite alternate}
+@keyframes zRun{0%{transform:translateY(0)}100%{transform:translateY(-3px)}}
+#bot{position:absolute;bottom:10px;width:100%;display:flex;justify-content:space-between;padding:0 12px;z-index:999;align-items:center}
+#joy{width:88px;height:88px;background:rgba(255,255,255,0.18);border:3px solid #fff;border-radius:50%;position:relative}
+#stick{position:absolute;top:50%;left:50%;width:38px;height:38px;background:rgba(255,255,255,0.6);border-radius:50%;transform:translate(-50%,-50%)}
+.btn{width:96px;height:50px;border:3px solid #000;border-radius:14px;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 0 #000}
+#dash{background:#0af} #atk{background:#f22}
+.fx{position:absolute;z-index:100;pointer-events:none;font-weight:900;animation:up 0.6s forwards} @keyframes up{to{transform:translateY(-70px);opacity:0}}
+#bossHp{position:absolute;top:52px;left:50%;transform:translateX(-50%);width:70%;height:18px;background:#000;border:3px solid #f00;border-radius:10px;display:none;z-index:999;overflow:hidden} #bossF{width:100%;height:100%;background:#f00}
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="ui">
-<div id="top"><div>HP <div id="hpBar"><div id="hpF"></div></div> <span id="hpT">85/100</span> 🪙<span id="coin">120</span> | LVL <span id="lvl">1</span></div><div id="ult">ULT READY</div></div>
-<div id="bot"><div id="joy"><div id="stick"></div></div><div style="display:flex;gap:10px"><div class="b" id="dash">DASH</div><div class="b" id="atk">ATK</div></div></div>
+<div id="game">
+<div id="bg"></div><div id="ground"></div>
+<div id="top"><div id="hpBox">HP<div id="hpBar"><div id="hpF"></div></div><span id="hpT">85/100</span> 🪙<span id="coin">120</span> LV<span id="lvl">1</span></div><div style="text-align:center;color:#fff;text-shadow:2px 2px 0 #000">- LEVEL <span id="lvl2">1</span> -<br><span id="lname">RUINED AVENUE</span></div><div id="ult">ULT READY</div></div>
+<div id="bossHp"><div id="bossF"></div></div>
+<div id="player"><img id="pImg" src="dante.png"></div>
+<div id="bot"><div id="joy"><div id="stick"></div></div><div style="display:flex;gap:10px"><div class="btn" id="dash">➤DASH</div><div class="btn" id="atk">⚔ATK</div></div></div>
 </div>
 <script>
-const c=document.getElementById('c'), x=c.getContext('2d');
-function resize(){c.width=innerWidth; c.height=innerHeight} resize(); addEventListener('resize',resize);
-let px=80, py=0, hp=85, lvl=1, kills=0, ult=100, enemies=[], particles=[];
-let keys={};
-function drawBG(){
- let g=x.createLinearGradient(0,0,0,c.height);
- g.addColorStop(0,lvl<4?'#ff7a18':lvl<7?'#444':'#300');
- g.addColorStop(1,'#1a0800');
- x.fillStyle=g; x.fillRect(0,0,c.width,c.height);
- // buildings
- x.fillStyle='rgba(0,0,0,0.5)';
- for(let i=0;i<7;i++) x.fillRect(i*c.width/7, c.height-180-Math.random()*60, 60, 180);
- // ground
- x.fillStyle='#3d2010'; x.fillRect(0,c.height-80,c.width,80);
-}
-function drawPlayer(){
- let y=c.height-80-90;
- x.fillStyle='rgba(0,0,0,0.3)'; x.beginPath(); x.ellipse(px+30,y+90,22,6,0,0,7); x.fill();
- // coat
- x.fillStyle='#c00'; x.strokeStyle='#000'; x.lineWidth=3; x.fillRect(px+5,y+35,50,45); x.strokeRect(px+5,y+35,50,45);
- // head
- x.fillStyle='#ffdfa0'; x.beginPath(); x.arc(px+30,y+18,22,0,7); x.fill(); x.stroke();
- // hair
- x.fillStyle='#fff'; x.beginPath(); x.arc(px+30,y+8,30,Math.PI,0); x.fill(); x.stroke();
- // eyes
- x.fillStyle='#000'; x.beginPath(); x.arc(px+20,y+20,5,0,7); x.arc(px+40,y+20,5,0,7); x.fill();
- x.fillStyle='#0ef'; x.beginPath(); x.arc(px+21,y+21,2.5,0,7); x.arc(px+41,y+21,2.5,0,7); x.fill();
- // sword
- x.save(); x.translate(px+45,y+60); x.rotate(-0.6); x.fillStyle='#ccc'; x.fillRect(-4,-5,8,50); x.strokeRect(-4,-5,8,50); x.restore();
-}
-function drawEnemies(){
- enemies.forEach(e=>{
-   let y=c.height-80-e.h;
-   // zombie type color
-   if(e.type==='walker') x.fillStyle='#4a7';
-   if(e.type==='runner') x.fillStyle='#f44';
-   if(e.type==='tank') x.fillStyle='#666';
-   if(e.type==='boss') x.fillStyle='#a00';
-   x.strokeStyle='#000'; x.lineWidth=3;
-   x.fillRect(e.x,y,e.w,e.h); x.strokeRect(e.x,y,e.w,e.h);
-   // eyes
-   x.fillStyle='#ff0'; x.fillRect(e.x+8,y+8,8,8); x.fillRect(e.x+e.w-18,y+8,8,8);
-   // boss hp bar
-   if(e.type==='boss'){ x.fillStyle='#000'; x.fillRect(e.x,y-14,e.w,8); x.fillStyle='#f00'; x.fillRect(e.x,y-14,e.w*(e.hp/e.maxHp),8); }
- });
-}
-function update(){
- // move enemies
- enemies.forEach(e=>{ e.x-=e.speed; });
- enemies=enemies.filter(e=>e.x>-100);
- // collide
- enemies.forEach((e,i)=>{
-   if(Math.abs(e.x-px)<50 && c.height-80-e.h < c.height-80){
-     if(e.type!=='boss'){ hp-=10; enemies.splice(i,1); }
-     else{ hp-=1; }
-     document.getElementById('hpF').style.width=hp+'%';
-     document.getElementById('hpT').innerText=hp+'/100';
-     if(hp<=0){ alert('GAME OVER Level:'+lvl+' Kills:'+kills); hp=85; kills=0; lvl=1; enemies=[]; document.getElementById('lvl').innerText=lvl; document.getElementById('hpF').style.width='85%'; document.getElementById('hpT').innerText='85/100'; }
-   }
- });
-}
-function loop(){
- drawBG(); drawEnemies(); drawPlayer(); update();
- requestAnimationFrame(loop);
-}
-loop();
-// SPAWN - SIGURADO MAY KALABAN!
-setInterval(()=>{
- if(enemies.filter(e=>e.type==='boss').length>0) return;
- let t='walker';
- if(lvl>=2 && Math.random()<0.4) t='runner';
- if(lvl>=4 && Math.random()<0.3) t='tank';
- if(kills>0 && kills%15===0 && lvl<10) t='boss';
- let e={x:c.width+20, w:t==='tank'?70:t==='boss'?110:55, h:t==='tank'?85:t==='boss'?120:75, speed:t==='runner'?5:t==='tank'?1.5:t==='boss'?1:2.5, type:t, hp:t==='tank'?4:t==='boss'?30:2, maxHp:t==='tank'?4:t==='boss'?30:2};
- enemies.push(e);
-}, 900);
-
-// CONTROLS - 100% WORKING
-let joy=document.getElementById('joy'), stick=document.getElementById('stick'), active=false, sx=0;
-joy.addEventListener('touchstart',e=>{active=true; sx=e.touches[0].clientX; e.preventDefault()},{passive:false});
-joy.addEventListener('touchmove',e=>{
- if(!active) return;
- let dx=e.touches[0].clientX-sx;
- stick.style.transform=`translate(calc(-50% + ${Math.max(-30,Math.min(30,dx))}px), -50%)`;
- if(dx<-10) px=Math.max(5,px-7);
- if(dx>10) px=Math.min(c.width-90,px+7);
- e.preventDefault();
-},{passive:false});
-joy.addEventListener('touchend',()=>{active=false; stick.style.transform='translate(-50%,-50%)'});
-
-function doAtk(){
- let hit=false;
- enemies.forEach((e,i)=>{
-   if(Math.abs(e.x-px)<120){
-     e.hp--; hit=true;
-     if(e.hp<=0){
-       enemies.splice(i,1); kills++; ult=Math.min(100,ult+12);
-       document.getElementById('coin').innerText=120+kills*5;
-       document.getElementById('ult').innerText= ult>=100?'ULT READY':'ULT '+ult+'%';
-       if(kills%12===0 && lvl<10){ lvl++; document.getElementById('lvl').innerText=lvl; }
-     }
-   }
- });
- // slash effect
- x.fillStyle='#0ff'; x.fillRect(px+60,c.height-130,80,6);
- setTimeout(()=>{},100);
-}
-document.getElementById('atk').addEventListener('touchstart',e=>{e.preventDefault(); doAtk()});
-document.getElementById('atk').addEventListener('click',doAtk);
-document.getElementById('dash').addEventListener('touchstart',e=>{e.preventDefault(); px+=110; if(px>c.width-90) px=c.width-90;});
-document.getElementById('dash').addEventListener('click',()=>{px+=110});
-document.getElementById('ult').addEventListener('click',()=>{
- if(ult<100) return; ult=0; document.getElementById('ult').innerText='ULT 0%'; enemies=[]; kills+=5;
-});
-</script>
-</body>
-</html>
+let px=60,hp=85,lvl=1,kills=0,ult=100,boss=null,bhp=0,bmax=0,moving=false;
+const player=document.getElementById('player'),game=document.getElementById('game'),hpF=document.getElementById('hpF'),hpT=document.getElementById('hpT'),lvlE=document.getElementById('lvl'),lvl2=document.getElementById('lvl2'),lname=document.getElementById('lname'),ultB=document.getElementById('ult'),bossBar=document.getElementById('bossHp'),bossF=document.getElementById('bossF'),coin=document.getElementById('coin'),pImg=document.getElementById('pImg');
+const lvls=[{name:'RUINED AVENUE',types:['w','w']},{name:'RUINED AVENUE',types:['w','r']},{name:'STREET BOSS',boss:'SMALL',bhp:25},{name:'DEAD SUBWAY',types:['r','c']},{name:'SUBWAY DEPTHS',types:['r','r','c']},{name:'SUBWAY BOSS',boss:'MED',bhp:40},{name:'FACTORY',types:['t','w','r']},{name:'FACTORY CORE',types:['t','t','c']},{name:'FACTORY BOSS',boss:'BIG',bhp:70},{name:'MUTANT KING',boss:'KING',bhp:120}];
+function makeZ(t){let d=document.createElement('div');d.className='enemy';if(t==='w'){d.style.width='62px';d.style.height='82px';d.innerHTML='<div style="width:100%;height:100%;background:linear-gradient(#5a9a4a,#2a5a2a);border:3px solid #000;border-radius:12px 12px 0 0"></div>';d.hp=2;d.sp=2.2;}else if(t==='r'){d.style.width='58px';d.style.height='78px';d.innerHTML='<div style="width:100%;height:100%;background:linear-gradient(#ff4444,#aa0000);border:3px solid #000;border-radius:10px"></div>';d.hp=1;d.sp=4.8;}else if(t==='c'){d.style.width='66px';d.style.height='44px';d.innerHTML='<div style="width:100%;height:100%;background:#a0a04a;border:3px solid #000;border-radius:20px 20px 0 0"></div>';d.hp=1;d.sp=3.5;}else if(t==='t'){d.style.width='80px';d.style.height='98px';d.innerHTML='<div style="width:100%;height:100%;background:linear-gradient(#888,#333);border:4px solid #000;border-radius:12px"></div>';d.hp=5;d.sp=1.5;}return d;}
+function spawnBoss(kind){bossBar.style.display='block';let d=document.createElement('div');d.className='enemy';d.style.zIndex='30';if(kind==='SMALL'){d.style.width='92px';d.style.height='115px';d.innerHTML='<div style="width:100%;height:100%;background:radial-gradient(#a00,#500);border:4px solid #000;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:62px">👹</div>';bhp=25;}if(kind==='MED'){d.style.width='104px';d.style.height='130px';d.innerHTML='<div style="width:100%;height:100%;background:radial-gradient(#0a0,#030);border:4px solid #000;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:70px">🧟‍♂️</div>';bhp=40;}if(kind==='BIG'){d.style.width='118px';d.style.height='148px';d.innerHTML='<div style="width:100%;height:100%;background:radial-gradient(#666,#222);border:4px solid #000;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:78px">🤖</div>';bhp=70;}if(kind==='KING'){d.style.width='140px';d.style.height='170px';d.innerHTML='<div style="width:100%;height:100%;background:radial-gradient(#f00,#400);border:5px solid #000;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:90px">👑</div>';bhp=120;}bmax=bhp;d.style.left=(innerWidth-150)+'px';boss=d;game.appendChild(d);let x=innerWidth-150,dir=-1;let id=setInterval(()=>{if(!boss){clearInterval(id);return}x+=dir*0.8;if(x<innerWidth*0.6) dir=0.8;if(x>innerWidth-150) dir=-0.8;d.style.left=x+'px';},16);}
+function setLevel(n){lvl=n;let L=lvls[n-1];lvlE.innerText=n;lvl2.innerText=n;lname.innerText=L.name;document.querySelectorAll('.enemy').forEach(e=>e.remove());boss=null;bossBar.style.display='none';if(L.boss){spawnBoss(L.boss);}}
+function spawn(){let L=lvls[lvl-1];if(L.boss) return;if(boss) return;let t=L.types[Math.floor(Math.random()*L.types.length)];let en=makeZ(t);let x=innerWidth+10;en.style.left=x+'px';game.appendChild(en);let iid=setInterval(()=>{x-=en.sp;en.style.left=x+'px';if(x<px+60&&x>px-5){hp-=7;if(hp<0)
