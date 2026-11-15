@@ -1,78 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#000;overflow:hidden;font-family:'Arial Black';touch-action:none;}
-#game{width:100vw;height:100vh;background: radial-gradient(ellipse at bottom, #3a1a00 0%, #1a0a00 50%, #000 100%);position:relative;overflow:hidden;}
-#ground{position:absolute;bottom:0;width:100%;height:85px;background:linear-gradient(#2a1a0a,#000);border-top:3px solid #ff6a00;}
-/* PLAYER - Zombie Diary Style - NO IMAGE NEEDED */
-#player{position:absolute;bottom:85px;left:60px;width:60px;height:80px;z-index:10;transition:bottom 0.2s cubic-bezier(.5,1.5,.5,1), left 0.1s;}
-.p-head{position:absolute;top:0;left:12px;width:36px;height:32px;background:#ffdbac;border:3px solid #000;border-radius:50%;z-index:3;}
-.p-hair{position:absolute;top:-6px;left:8px;width:44px;height:22px;background:#fff;border:3px solid #000;border-radius:12px 12px 4px 4px;z-index:4;}
-.p-hair::after{content:'';position:absolute;top:8px;left:-8px;width:20px;height:12px;background:#fff;border:2px solid #000;border-radius:50%;transform:rotate(-20deg);}
-.p-eye{position:absolute;top:12px;right:8px;width:8px;height:8px;background:#000;border-radius:50%;}
-.p-eye::after{content:'';position:absolute;top:2px;left:2px;width:3px;height:3px;background:#fff;border-radius:50%;}
-.p-body{position:absolute;top:28px;left:4px;width:52px;height:36px;background:linear-gradient(180deg,#d00,#600);border:3px solid #000;border-radius:8px 8px 4px 4px;z-index:2;}
-.p-body::before{content:'✦';position:absolute;top:4px;left:18px;color:gold;font-size:12px;}
-.p-sword{position:absolute;top:-8px;left:-14px;width:10px;height:70px;background:linear-gradient(#aaa,#333);border:2px solid #000;transform:rotate(-28deg);border-radius:3px;z-index:1;}
-.p-sword::before{content:'';position:absolute;top:-8px;left:-2px;width:14px;height:10px;background:#222;border:2px solid #000;}
-.p-leg{position:absolute;bottom:0;width:16px;height:22px;background:#111;border:3px solid #000;border-top:none;z-index:1;}
-.p-leg.l{left:10px;} .p-leg.r{left:30px;}
-#player.run .p-leg{animation:run 0.2s infinite alternate;}
-@keyframes run{0%{height:22px}100%{height:18px; bottom:2px}}
-#player.jump{bottom:180px !important;}
-#player.attack .p-body{transform:translateX(10px);}
-#player.attack .p-sword{transform:rotate(15deg) translateX(30px); background:linear-gradient(#0ff,#00a); box-shadow:0 0 20px #0ff;}
-/* UI */
-#uiTop{position:absolute;top:0;width:100%;display:flex;justify-content:space-between;padding:12px;z-index:20;}
-.badge{background:#000;border:3px solid #ff6a00;color:#ff6a00;padding:8px 18px;border-radius:30px;font-weight:900;font-size:15px;box-shadow:0 0 15px #ff6a0044;}
-.badge.ult{background:linear-gradient(#ff6a00,#ff0000);color:#fff;border-color:#fff;cursor:pointer;animation:glow 1s infinite alternate;}
-@keyframes glow{0%{box-shadow:0 0 10px #ff0000}100%{box-shadow:0 0 25px #ff0000,0 0 35px #ff6a00}}
-#controls{position:absolute;bottom:10px;width:100%;display:flex;justify-content:space-between;padding:0 14px;z-index:30;}
-.cGroup{display:flex;gap:10px;}
-.btn{width:60px;height:60px;background:radial-gradient(#222,#000);border:3px solid #ff6a00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;box-shadow:0 4px 0 #000,0 0 15px currentColor;cursor:pointer;user-select:none;}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #000;}
-.btn.sword{border-color:#00e5ff;color:#00e5ff;} .btn.jump{border-color:#ffeb00;color:#ffeb00;} .btn.gun{border-color:#ff6a00;color:#ff6a00;} .btn.ult{border-color:#ff1493;color:#ff1493;width:68px;height:68px;font-size:26px;}
-.enemy{position:absolute;bottom:85px;z-index:5;font-size:38px;filter:drop-shadow(0 0 5px #f00);}
-.fx{position:absolute;z-index:15;pointer-events:none;font-weight:900;font-size:40px;text-shadow:0 0 10px currentColor;animation:fx 0.3s forwards;}
-@keyframes fx{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-40px) scale(1.5); opacity:0}}
-.bullet{position:absolute;bottom:108px;font-size:20px;z-index:12;}
-</style>
-</head>
-<body>
-<div id="game">
-<div id="uiTop"><div class="badge" id="hp">HP: 100 | KILL: 0</div><div class="badge ult" id="ult">ULT: READY!</div></div>
-<div id="player"><div class="p-sword"></div><div class="p-hair"></div><div class="p-head"><div class="p-eye"></div></div><div class="p-body"></div><div class="p-leg l"></div><div class="p-leg r"></div></div>
-<div id="ground"></div>
-<div id="controls"><div class="cGroup"><div class="btn" id="L">◀</div><div class="btn" id="R">▶</div></div><div class="cGroup"><div class="btn sword" id="S">⚔️</div><div class="btn jump" id="J">⤴</div><div class="btn gun" id="G">🔫</div><div class="btn ult" id="U">💥</div></div></div>
-</div>
-<script>
-let x=60,hp=100,kills=0,ult=100,jump=false,running=false;
-const p=document.getElementById('player'), hpE=document.getElementById('hp'), ultE=document.getElementById('ult'), game=document.getElementById('game');
-function ui(){hpE.innerHTML=`HP: ${hp} | KILL: ${kills}`; ultE.innerHTML=ult>=100?'ULT: READY!':'ULT: '+ult+'%'; ultE.style.opacity=ult>=100?1:0.6;}
-function move(d){ x=Math.max(0,Math.min(innerWidth-80,x+d)); p.style.left=x+'px'; p.classList.add('run'); clearTimeout(running); running=setTimeout(()=>p.classList.remove('run'),300);}
-L.onclick=()=>move(-40); R.onclick=()=>move(40);
-L.ontouchstart=(e)=>{e.preventDefault();move(-40)}; R.ontouchstart=(e)=>{e.preventDefault();move(40)};
-J.onclick=()=>{ if(jump) return; jump=true; p.classList.add('jump'); setTimeout(()=>{p.classList.remove('jump');jump=false;},480); };
-S.onclick=()=>{
- p.classList.add('attack'); setTimeout(()=>p.classList.remove('attack'),220);
- let f=document.createElement('div'); f.className='fx'; f.style.left=(x+55)+'px'; f.style.bottom='105px'; f.style.color='#00e5ff'; f.innerText='⚔️💥'; game.appendChild(f); setTimeout(()=>f.remove(),300);
- document.querySelectorAll('.enemy').forEach(en=>{ if(Math.abs(parseInt(en.style.left)-x)<125){ en.remove(); kills++; ult=Math.min(100,ult+15); let d=document.createElement('div'); d.className='fx'; d.style.left=en.style.left; d.style.bottom='120px'; d.style.color='#0f0'; d.innerText='+1'; game.appendChild(d); setTimeout(()=>d.remove(),400);} }); ui();
-};
-G.onclick=()=>{
- let b=document.createElement('div'); b.className='bullet'; b.innerText='💥'; b.style.left=(x+50)+'px'; game.appendChild(b);
- let bx=x+50, iv=setInterval(()=>{ bx+=32; b.style.left=bx+'px'; document.querySelectorAll('.enemy').forEach(en=>{ if(Math.abs(parseInt(en.style.left)-bx)<38){ en.remove(); b.remove(); clearInterval(iv); kills++; ult=Math.min(100,ult+10); ui(); } }); if(bx>innerWidth){clearInterval(iv); b.remove();}},18);
-};
-U.onclick=()=>{
- if(ult<100) return; ult=0; p.style.filter='drop-shadow(0 0 30px red) brightness(1.5)'; game.style.background='radial-gradient(#f00,#300)'; document.querySelectorAll('.enemy').forEach(en=>{en.remove(); kills+=1;}); let big=document.createElement('div'); big.className='fx'; big.style.left='50%'; big.style.top='40%'; big.style.fontSize='60px'; big.style.color='#ff0'; big.innerText='DEVIL TRIGGER!!!'; game.appendChild(big); setTimeout(()=>big.remove(),1000); setTimeout(()=>{p.style.filter='none'; game.style.background='radial-gradient(ellipse at bottom, #3a1a00 0%, #1a0a00 50%, #000 100%)';},1200); ui();
-};
-setInterval(()=>{
- let e=document.createElement('div'); e.className='enemy'; e.innerText=Math.random()>0.6?'🧟‍♂️':'👹'; let ex=innerWidth-20; e.style.left=ex+'px'; game.appendChild(e);
- let mv=setInterval(()=>{ ex-=5+Math.random()*3; e.style.left=ex+'px'; if(ex<x+48 && ex>x-8 && !jump){ hp-=15; e.remove(); clearInterval(mv); let fx=document.createElement('div'); fx.className='fx'; fx.style.left=x+'px'; fx.style.bottom='130px'; fx.style.color='#f00'; fx.innerText='-15'; game.appendChild(fx); setTimeout(()=>fx.remove(),400); if(hp<=0){alert('💀 GAME OVER! Kills: '+kills); hp=100; kills=0; document.querySelectorAll('.enemy').forEach(en=>en.remove());} ui();} if(ex<-60){clearInterval(mv); e.remove();}},32);
-},1100);
-ui();
-</script>
-</body>
-</html>
+body{background:#000;overflow:hidden;font-family:'Arial Black',Arial;touch-action:none;}
+#game{width:100vw;height:100vh;position:relative;background:linear-gradient(180deg,#ff7a18 0%,#a33a00 35%,#2a0f00 70%,#1a0800 100%);overflow:hidden;}
+/* Ruined city silhouettes */
+#city{position:absolute;bottom:85px;width:100%;height:55%;opacity:0.7;background: 
+linear-gradient(transparent 0%, rgba(0,0,0,0.8) 100%),
+url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300"><path fill="%23000" d="M0 250 L20 250 L20 180 L40 180 L40 220 L60 220 L60 100 L90 100 L90 250 L110 250 L110 150 L140 150 L140 250 L200 250 L200 120 L240 120 L240 250 L280 250 L280 180 L320 180 L320 250 L360 250 L360 90 L400 90 L400 250 L460 250 L460 140 L500 140 L500 250 L560 250 L560 110 L600 110 L600 250 L650 250 L650 170 L700 170 L700 250 L760 250 L760 80 L800 80 L800 250 L800 300 L0 300 Z"/></svg>');background-size:cover;}
+#ground{position:absolute;bottom:0;width:100%;height:90px;background:linear-gradient(#4a2010,#1a0a00);border-top:2px solid #5a3010;}
+.bone{position:absolute;bottom:20px;width:40px;height:8px;background:#d0c0a0;border-radius:10px;}
+.bone::before,.bone::after{content:'';position:absolute;width:10px;height:10px;background:#d0c0a0;border-radius:50%;top:-1px;}
+.bone::before{left:-3px;} .bone::after{right:-3px;}
+/* TOP UI - Exact like screenshot */
+#topUI{position:absolute;top:0;left:0;width:100%;padding:10px 12px;display:flex;justify-content:space-between;align-items:flex-start;z-index:50;}
+#leftTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#hpWrap{display:flex;align-items:center;gap:6px;}
+#hpText{font-size:32px;font-weight:900;color:#fff;-webkit-text-stroke:3px #000;text-stroke:3px #000;}
+#hpBar{width:130px;height:18px;background:#000;border:3px solid #000;border-radius:10px;overflow:hidden;transform:skew(-10deg);}
+#hpFill{width:85%;height:100%;background:linear-gradient(#5f5,#0a0);}
+#hpNum{font-size:18px;color:#fff;-webkit-text-stroke:2px #000;font-weight:900;}
+#coin{display:flex;align-items:center;gap:3px;font-size:20px;color:#fff;-webkit-text-stroke:2px #000;font-weight:900;}
+#coinIcon{width:24px;height:24px;background:radial-gradient(#ffaa00,#ff6600);border:2px solid #000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;}
+#level{position:absolute;left:50%;transform:translateX(-50%);text-align:center;top:8px;}
+#level div{font-size:14px;color:#fff;-webkit-text-stroke:1.
