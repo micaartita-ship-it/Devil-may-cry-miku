@@ -3,166 +3,57 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;touch-action:none}
-body{background:#000;overflow:hidden;font-family:Arial Black,Arial}
-#game{position:relative;width:100vw;height:100vh;background:linear-gradient(#1a2a3a 0%, #0d1a26 60%, #111 100%);overflow:hidden}
-#lab-bg{position:absolute;width:100%;height:100%;background:
-radial-gradient(ellipse at 20% 50%, rgba(0,255,0,0.15) 0%, transparent 50%),
-radial-gradient(ellipse at 80% 30%, rgba(0,255,100,0.1) 0%, transparent 40%),
-linear-gradient(90deg, transparent 48%, rgba(100,255,100,0.05) 50%, transparent 52%)
-}
-.tank{position:absolute;bottom:35%;width:18%;height:55%;background:linear-gradient(#2aff2a44, #00aa0044);border:2px solid #0f0;border-radius:20px;box-shadow:0 0 20px #0f05,inset 0 0 20px #0f02}
-.tank:nth-child(1){left:5%}.tank:nth-child(2){left:32%}.tank:nth-child(3){right:15%;width:14%;height:35%;bottom:40%}
-.tank::after{content:'';position:absolute;top:20%;left:30%;width:40%;height:30%;background:radial-gradient(#fff2,#000);border-radius:50%;filter:blur(2px)}
-#floor{position:absolute;bottom:0;width:100%;height:32%;background:linear-gradient(#2a3a4a, #1a2a3a);border-top:4px solid #3a4a5a;
-background-image:repeating-linear-gradient(90deg, transparent 0 9%, #0003 9% 10%)}
-#ui-top{position:absolute;top:0;left:0;width:100%;height:18%;background:linear-gradient(#000c, transparent);display:flex;justify-content:space-between;padding:8px;z-index:10}
-#hp-bar{width:45%;height:28px;background:#300;border:3px solid #fff;border-radius:10px;overflow:hidden;position:relative}
-#hp-fill{width:100%;height:100%;background:linear-gradient(90deg,#f00,#f55);transition:width 0.2s}
-#avatar{position:absolute;left:-5px;top:-8px;width:45px;height:45px;background:#aaf;border-radius:50%;border:3px solid #fff;overflow:hidden}
-#avatar::after{content:'😎';font-size:28px;position:absolute;left:3px;top:2px}
-#coins{color:#ff0;font-size:16px;margin-top:35px;text-shadow:2px 2px 0 #000}
-#right-ui{text-align:right;color:#fff;font-size:14px;text-shadow:2px 2px 0 #000}
-#timer{font-size:22px}
-#player{position:absolute;bottom:32%;left:35%;width:45px;height:65px;z-index:5;transition:left 0.05s}
-#player-head{width:32px;height:28px;background:#ffdbac;border-radius:10px 10px 5px 5px;margin:0 auto;position:relative;border:2px solid #000}
-#player-beanie{position:absolute;top:-10px;left:-3px;width:38px;height:18px;background:#6a5acd;border-radius:10px 10px 0 0;border:2px solid #000}
-#player-beanie::after{content:'';position:absolute;top:-5px;right:5px;width:10px;height:10px;background:#6a5acd;border-radius:50%}
-#player-body{width:34px;height:28px;background:#8b4513;margin:0 auto;margin-top:-2px;border:2px solid #000}
-#player-legs{width:30px;height:18px;background:#2a5db0;margin:0 auto;display:flex;gap:4px}
-#gun{position:absolute;right:-12px;top:8px;width:22px;height:8px;background:#333;border-radius:2px}
-.zombie{position:absolute;bottom:32%;width:50px;height:70px;z-index:4}
-.z-body{width:35px;height:35px;background:#ff6b6b;border-radius:10px;margin:0 auto;border:2px solid #000}
-.z-head{width:38px;height:30px;background:#ff8f8f;border-radius:15px 15px 5px 5px;margin:0 auto;margin-bottom:-5px;border:2px solid #000;position:relative}
-.z-head::after{content:'👀';position:absolute;top:5px;left:5px;font-size:16px}
-.z-hair{position:absolute;top:-8px;left:2px;width:34px;height:12px;background:#ff4757;border-radius:10px 10px 0 0}
-.bullet{position:absolute;width:10px;height:4px;background:#ff0;border-radius:2px;box-shadow:0 0 8px #ff0;z-index:6}
-#controls{position:absolute;bottom:0;width:100%;height:35%;display:flex;justify-content:space-between;align-items:flex-end;padding:15px;z-index:20}
-#joy-base{width:110px;height:110px;background:#0008;border-radius:50%;border:3px solid #0af7;position:relative}
-#joy-stick{position:absolute;left:35px;top:35px;width:40px;height:40px;background:linear-gradient(#0af,#05a);border-radius:50%;box-shadow:0 0 15px #0af}
-#shoot-btn{width:75px;height:75px;background:radial-gradient(#f44,#a00);border-radius:50%;border:4px solid #fff;box-shadow:0 0 20px #f00a;display:flex;align-items:center;justify-content:center;font-size:30px}
-#combo{position:absolute;left:10px;top:45%;color:#f00;font-size:28px;font-weight:900;text-shadow:3px 3px 0 #000;display:none;z-index:15}
-.hit{animation:hit 0.2s}
-@keyframes hit{0%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}100%{transform:translateX(0)}}
+body { margin:0; background:#1a0f00; overflow:hidden; touch-action:none; font-family:Arial; }
+#game { width:100vw; height:100vh; background: linear-gradient(#2a1a00, #0d0600); position:relative; }
+#player { position:absolute; bottom:80px; left:50px; font-size:50px; transition: bottom 0.2s; }
+#hp { position:absolute; top:10px; left:10px; color:#ff6a00; font-weight:900; background:#000; padding:5px 15px; border:2px solid #ff6a00; border-radius:10px; }
+#ult { position:absolute; top:10px; right:10px; color:#fff; font-weight:900; background:linear-gradient(#ff6a00,#ff0000); padding:8px 15px; border-radius:20px; border:2px solid #fff; }
+#controls { position:absolute; bottom:10px; width:100%; display:flex; justify-content:space-between; padding:0 20px; box-sizing:border-box; }
+.btn { width:70px; height:70px; background:#000; border:3px solid #ff6a00; border-radius:50%; color:#ff6a00; font-weight:900; font-size:20px; box-shadow:0 0 15px #ff6a00; }
+.btn:active { background:#ff6a00; color:#000; }
+#sword { border-color:#00d4ff; color:#00d4ff; box-shadow:0 0 15px #00d4ff; }
+#jump { border-color:#ffe600; color:#ffe600; box-shadow:0 0 15px #ffe600; }
+#ultimate { border-color:#ff1493; color:#ff1493; box-shadow:0 0 20px #ff1493; width:80px; height:80px; }
+.enemy { position:absolute; bottom:80px; font-size:40px; }
+.slash { position:absolute; font-size:30px; color:#00d4ff; font-weight:900; text-shadow:0 0 10px #00d4ff; }
 </style>
 </head>
 <body>
 <div id="game">
-<div id="lab-bg">
-<div class="tank"></div><div class="tank"></div><div class="tank"></div>
-</div>
-<div id="floor"></div>
-
-<div id="ui-top">
-<div>
-<div id="hp-bar"><div id="avatar"></div><div id="hp-fill"></div></div>
-<div id="coins">🪙 <span id="coinCount">3,205</span> 💎 <span id="gemCount">9</span></div>
-<div id="timer">⏱️ <span id="time">00:34</span></div>
-</div>
-<div id="right-ui">
-<div>🔫 <span id="gun1">∞</span> | 🔫 <span id="gun2">85</span></div>
-<div style="margin-top:5px">KILL: <span id="kills">0</span></div>
-</div>
-</div>
-
-<div id="combo"><span id="comboNum">3</span><br>COMBO</div>
-
-<div id="player">
-<div id="player-head"><div id="player-beanie"></div></div>
-<div id="player-body"><div id="gun"></div></div>
-<div id="player-legs"><div style="width:12px;background:#2a5db0"></div><div style="width:12px;background:#2a5db0"></div></div>
-</div>
-
+<div id="hp">HP: 100 | KILL: 0</div>
+<div id="ult">ULT: READY!</div>
+<div id="player">😎⚔️</div>
 <div id="controls">
-<div id="joy-base"><div id="joy-stick"></div></div>
-<div id="shoot-btn">🔫</div>
+<div style="display:flex; gap:10px;">
+<button class="btn" id="left">◀️</button>
+<button class="btn" id="right">▶️</button>
+</div>
+<div style="display:flex; gap:10px;">
+<button class="btn" id="sword">⚔️</button>
+<button class="btn" id="jump">⤴️</button>
+<button class="btn" id="shoot">🔫</button>
+<button class="btn" id="ultimate">💥</button>
 </div>
 </div>
-
+</div>
 <script>
-let hp=100,coins=3205,kills=0,combo=0,timeLeft=34;
-let playerX=35, isShooting=false, bullets=[], zombies=[];
-let keys={left:false,right:false};
-const player=document.getElementById('player');
-const game=document.getElementById('game');
-const joyBase=document.getElementById('joy-base');
-const joyStick=document.getElementById('joy-stick');
-const shootBtn=document.getElementById('shoot-btn');
+let x=50, y=80, hp=100, kills=0, ultCharge=100, isJumping=false;
+let p=document.getElementById('player'), game=document.getElementById('game');
+let hpBar=document.getElementById('hp'), ultBar=document.getElementById('ult');
 
-function spawnZombie(){
- if(zombies.length>5) return;
- const z=document.createElement('div'); z.className='zombie';
- z.style.left='100%'; z.style.bottom='32%';
- z.innerHTML='<div class="z-head"><div class="z-hair"></div></div><div class="z-body"></div>';
- z.hp=2; game.appendChild(z);
- zombies.push({el:z,x:100,hp:2,speed:0.3+Math.random()*0.4});
-}
-setInterval(spawnZombie,1200);
-spawnZombie();
+function updateUI(){ hpBar.innerText=`HP: ${hp} | KILL: ${kills}`; ultBar.innerText=ultCharge>=100?'ULT: READY!':`ULT: ${ultCharge}%`; ultBar.style.opacity=ultCharge>=100?'1':'0.5'; }
 
-function shoot(){
- if(isShooting) return; isShooting=true;
- setTimeout(()=>isShooting=false,200);
- const b=document.createElement('div'); b.className='bullet';
- b.style.left=(playerX+5)+'%'; b.style.bottom='40%';
- game.appendChild(b); bullets.push({el:b,x:playerX+5});
- player.classList.add('hit'); setTimeout(()=>player.classList.remove('hit'),100);
- combo++; document.getElementById('comboNum').textContent=combo;
- document.getElementById('combo').style.display=combo>2?'block':'none';
- if(combo>2) setTimeout(()=>{if(combo>0) combo--; if(combo<3) document.getElementById('combo').style.display='none';},2000);
+document.getElementById('left').ontouchstart=()=>{ x-=30; p.style.left=x+'px'; p.innerText='😎⚔️'; }
+document.getElementById('right').ontouchstart=()=>{ x+=30; p.style.left=x+'px'; p.innerText='⚔️😎'; }
+
+document.getElementById('jump').onclick=()=>{
+ if(isJumping) return; isJumping=true;
+ p.style.bottom='180px'; p.innerText='😎⤴️';
+ setTimeout(()=>{ p.style.bottom='80px'; isJumping=false; p.innerText='😎⚔️'; },400);
 }
 
-function update(){
- bullets.forEach((b,i)=>{
-  b.x+=2; b.el.style.left=b.x+'%';
-  zombies.forEach((z,zi)=>{
-   if(Math.abs(b.x - z.x)<4 && z.hp>0){
-    z.hp--; b.el.remove(); bullets.splice(i,1);
-    z.el.classList.add('hit'); setTimeout(()=>z.el.classList.remove('hit'),150);
-    if(z.hp<=0){ z.el.remove(); zombies.splice(zi,1); kills++; coins+=10;
-     document.getElementById('kills').textContent=kills;
-     document.getElementById('coinCount').textContent=coins.toLocaleString();
-    }
-   }
-  });
-  if(b.x>110){ b.el.remove(); bullets.splice(i,1);}
- });
- zombies.forEach(z=>{
-  z.x-=z.speed; z.el.style.left=z.x+'%';
-  if(z.x < playerX+4 && z.x > playerX-2){
-   hp-=0.5; document.getElementById('hp-fill').style.width=hp+'%';
-   if(hp<=0){ alert('GAME OVER! Kills: '+kills); location.reload(); }
-  }
-  if(z.x<-10){ z.el.remove(); zombies.splice(zombies.indexOf(z),1); }
- });
- if(keys.left && playerX>2) playerX-=0.8;
- if(keys.right && playerX<70) playerX+=0.8;
- player.style.left=playerX+'%';
- requestAnimationFrame(update);
-}
-update();
-
-setInterval(()=>{ timeLeft--; if(timeLeft<0) timeLeft=34;
- document.getElementById('time').textContent='00:'+(timeLeft<10?'0':'')+timeLeft; },1000);
-
-let joyActive=false, joyStartX=0;
-joyBase.addEventListener('touchstart',e=>{ joyActive=true; joyStartX=e.touches[0].clientX; });
-joyBase.addEventListener('touchmove',e=>{
- if(!joyActive) return; let dx=e.touches[0].clientX-joyStartX;
- dx=Math.max(-30,Math.min(30,dx)); joyStick.style.left=(35+dx)+'px';
- keys.left=dx<-10; keys.right=dx>10;
-});
-joyBase.addEventListener('touchend',()=>{ joyActive=false; joyStick.style.left='35px'; keys.left=false; keys.right=false; });
-shootBtn.addEventListener('touchstart',e=>{ e.preventDefault(); shoot(); });
-shootBtn.addEventListener('mousedown',shoot);
-let spaceHeld=false; document.addEventListener('keydown',e=>{
- if(e.code==='Space' && !spaceHeld){ spaceHeld=true; shoot(); }
- if(e.code==='ArrowLeft') keys.left=true; if(e.code==='ArrowRight') keys.right=true;
-});
-document.addEventListener('keyup',e=>{
- if(e.code==='Space') spaceHeld=false;
- if(e.code==='ArrowLeft') keys.left=false; if(e.code==='ArrowRight') keys.right=false;
-});
-</script>
-</body>
-</html>
+document.getElementById('sword').onclick=()=>{
+ let s=document.createElement('div'); s.className='slash'; s.innerText='💥⚔️💥';
+ s.style.left=(x+60)+'px'; s.style.bottom='90px'; game.appendChild(s);
+ // check enemies
+ document.querySelectorAll('.enemy').forEach
