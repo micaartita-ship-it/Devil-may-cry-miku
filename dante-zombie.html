@@ -1,150 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
-*{margin:0;padding:0;box-sizing:border-box} 
-body{background:#000;overflow:hidden;touch-action:none}
-#gameCanvas{width:100vw;height:100vh;display:block}
-#ui{position:absolute;top:0;left:0;width:100%;pointer-events:none}
-#topBar{pointer-events:auto;display:flex;justify-content:space-between;padding:10px 12px;align-items:center}
-.hpBox{display:flex;align-items:center;gap:6px;background:#000;border:2px solid #fff;border-radius:10px;padding:5px 10px;color:#fff;font-family:Arial Black;font-size:14px}
-#hpBar{width:80px;height:12px;background:#333;border-radius:6px;overflow:hidden} #hpFill{width:85%;height:100%;background:#0f0;transition:width 0.2s}
-.level{position:absolute;left:50%;transform:translateX(-50%);text-align:center;color:#fff;font-family:Arial Black;-webkit-text-stroke:1px #000;font-size:12px;line-height:1.1}
-.ult{padding:6px 14px;background:#ffcc00;border:3px solid #000;border-radius:10px;font-family:Arial Black;font-weight:900;box-shadow:0 0 15px #ff0;pointer-events:auto;cursor:pointer}
-#controls{position:absolute;bottom:12px;width:100%;display:flex;justify-content:space-between;padding:0 14px;pointer-events:auto}
-#joy{width:95px;height:95px;background:rgba(255,255,255,0.18);border:3px solid rgba(255,255,255,0.5);border-radius:50%;position:relative}
-#stick{position:absolute;top:50%;left:50%;width:42px;height:42px;background:rgba(255,255,255,0.5);border-radius:50%;transform:translate(-50%,-50%)}
-.btns{display:flex;gap:10px}
-.cbtn{width:105px;height:52px;border:3px solid #000;border-radius:12px;font-family:Arial Black;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #000;color:#fff;cursor:pointer}
-.cbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
-#dash{background:#0088ff} #atk{background:#ff2222}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;overflow:hidden;font-family:Arial Black;touch-action:none}
+#game{width:100vw;height:100vh;position:relative;background:linear-gradient(180deg,#ff8a2a,#7a2a00 60%,#1a0800);overflow:hidden}
+#top{position:absolute;top:0;width:100%;height:52px;display:flex;justify-content:space-between;padding:5px 8px;z-index:999;background:linear-gradient(rgba(0,0,0,0.7),transparent)}
+#hpWrap{display:flex;align-items:center;gap:4px;background:#000;border:2px solid #fff;border-radius:18px;padding:3px 8px}
+#hpBar{width:90px;height:12px;background:#222;border-radius:8px;overflow:hidden} #hpFill{width:85%;height:100%;background:linear-gradient(90deg,#0f0,#2a2)}
+#coin{color:#fff;font-size:13px}
+#lv{position:absolute;left:50%;transform:translateX(-50%);text-align:center;color:#fff;font-size:11px;line-height:1;-webkit-text-stroke:0.5px #000}
+#ult{padding:7px 14px;background:linear-gradient(#ffe600,#ff8000);border:3px solid #000;border-radius:10px;font-weight:900;font-size:14px;box-shadow:0 0 12px #ff0;cursor:pointer}
+#ground{position:absolute;bottom:0;width:100%;height:82px;background:linear-gradient(#5a2e12,#1a0800);z-index:2}
+#player{position:absolute;bottom:82px;left:60px;width:80px;height:105px;z-index:20;transition:left 0.08s}
+.chibi{width:100%;height:100%;position:relative}
+.hair{position:absolute;top:0;left:5px;width:70px;height:48px;background:#fff;border:3px solid #000;border-radius:50% 50% 8px 8px}
+.face{position:absolute;top:26px;left:12px;width:56px;height:44px;background:#ffdfa0;border:3px solid #000;border-radius:50%}
+.eye{position:absolute;top:14px;width:11px;height:11px;background:#000;border-radius:50%} .eye:after{content:'';position:absolute;top:2px;left:2px;width:5px;height:5px;background:#0ef;border-radius:50%}
+.e1{left:10px} .e2{left:33px}
+.coat{position:absolute;top:64px;left:8px;width:64px;height:40px;background:#c00;border:3px solid #000;border-radius:6px}
+.sword{position:absolute;top:8px;left:-10px;width:11px;height:68px;background:#ccc;border:2px solid #000;transform:rotate(-30deg)}
+#player.atk{transform:translateX(15px) scale(1.1)} #player.atk .sword{transform:rotate(20deg) translateX(20px);background:#0ff;box-shadow:0 0 15px #0ff}
+.enemy{position:absolute;bottom:82px;z-index:10;will-change:left}
+.zType1{width:62px;height:82px} .zType2{width:54px;height:78px} .zType3{width:78px;height:95px} .zBoss{width:130px;height:160px;z-index:15!important}
+.zBody{width:100%;height:100%;position:relative}
+#bottom{position:absolute;bottom:6px;width:100%;display:flex;justify-content:space-between;padding:0 10px;z-index:999;align-items:center}
+#joy{width:86px;height:86px;background:rgba(255,255,255,0.15);border:3px solid rgba(255,255,255,0.4);border-radius:50%;position:relative}
+#stick{position:absolute;top:50%;left:50%;width:36px;height:36px;background:rgba(255,255,255,0.45);border-radius:50%;transform:translate(-50%,-50%)}
+.btn{width:94px;height:46px;border:3px solid #000;border-radius:12px;color:#fff;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 #000}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
+#dash{background:#0a8aff} #atk{background:#ff1a1a}
+.fx{position:absolute;z-index:100;pointer-events:none;font-weight:900;animation:pop 0.6s forwards}
+@keyframes pop{to{transform:translateY(-60px);opacity:0}}
+#bossHp{position:absolute;top:55px;left:50%;transform:translateX(-50%);width:70%;height:18px;background:#000;border:2px solid #f00;border-radius:10px;display:none;z-index:999;overflow:hidden}
+#bossFill{width:100%;height:100%;background:linear-gradient(90deg,#f00,#900)}
 </style>
 </head>
 <body>
-<canvas id="gameCanvas"></canvas>
-<div id="ui">
-<div id="topBar">
-<div class="hpBox">HP <div id="hpBar"><div id="hpFill"></div></div> <span id="hpTxt">85/100</span> 🪙<span id="coin">120</span></div>
-<div class="level"><div>- LEVEL 1-3 -</div><div>- RUINED AVENUE -</div></div>
-<div style="display:flex;gap:8px"><div class="ult" id="ult">ULT READY</div><div class="hpBox" style="width:38px;justify-content:center">II</div></div>
-</div>
-<div id="controls">
-<div id="joy"><div id="stick"></div></div>
-<div class="btns"><div class="cbtn" id="dash">➤ DASH</div><div class="cbtn" id="atk">⚔ ATK</div></div>
-</div>
+<div id="game">
+<div id="top"><div id="hpWrap"><b style="color:#fff">HP</b><div id="hpBar"><div id="hpFill"></div></div><span id="hpTxt" style="color:#fff;font-size:12px">85/100</span><span id="coin">🪙120</span></div><div id="lv">- LEVEL 1 -<br><span id="lvName">RUINED AVENUE</span></div><div id="ult">ULT READY</div></div>
+<div id="bossHp"><div id="bossFill"></div></div>
+<div id="ground"></div>
+<div id="player"><div class="chibi"><div class="sword"></div><div class="hair"></div><div class="face"><div class="eye e1"></div><div class="eye e2"></div></div><div class="coat"></div></div></div>
+<div id="bottom"><div id="joy"><div id="stick"></div></div><div style="display:flex;gap:8px"><div class="btn" id="dash">➤DASH</div><div class="btn" id="atk">⚔ATK</div></div></div>
 </div>
 <script>
-const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
-function resize(){canvas.width=innerWidth*devicePixelRatio; canvas.height=innerHeight*devicePixelRatio; canvas.style.width=innerWidth+'px'; canvas.style.height=innerHeight+'px'; ctx.scale(devicePixelRatio,devicePixelRatio);}
-resize(); addEventListener('resize',resize);
-let W=()=>innerWidth, H=()=>innerHeight;
-let player={x:90,y:H()-90-90,w:60,h:80,hp:85,maxHp:100,coin:120,kills:0,ult:100,dir:1,attacking:0,jumping:0,jumpY:0};
-let enemies=[], particles=[], keys={}, touchX=0;
-let groundY=()=>H()-90;
-function drawBackground(){
- let g=ctx.createLinearGradient(0,0,0,H());
- g.addColorStop(0,'#ff8c1a'); g.addColorStop(0.4,'#a33d00'); g.addColorStop(1,'#1a0a00');
- ctx.fillStyle=g; ctx.fillRect(0,0,W(),H());
- // ruined buildings silhouette
- ctx.fillStyle='rgba(0,0,0,0.5)';
- for(let i=0;i<6;i++){ let bx=i*W()/5+Math.sin(i)*20; ctx.fillRect(bx, groundY()-120-Math.random()*80, 60+Math.random()*40, 120+Math.random()*80); }
- // ground
- ctx.fillStyle='#3d1e0e'; ctx.fillRect(0,groundY(),W(),90);
- ctx.fillStyle='#5a2e18'; ctx.fillRect(0,groundY(),W(),4);
-}
-function drawPlayer(){
- let x=player.x, y=groundY()-player.h+player.jumpY;
- ctx.save();
- if(player.dir<0){ctx.translate(x+player.w/2,0); ctx.scale(-1,1); ctx.translate(-(x+player.w/2),0);}
- // shadow
- ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.beginPath(); ctx.ellipse(x+player.w/2, groundY()-2, 20,5,0,0,Math.PI*2); ctx.fill();
- // coat
- ctx.fillStyle='#cc0000'; ctx.strokeStyle='#000'; ctx.lineWidth=3;
- ctx.beginPath(); ctx.roundRect(x+5,y+35,50,45,8); ctx.fill(); ctx.stroke();
- // sword back
- ctx.fillStyle='#aaa'; ctx.strokeStyle='#000'; ctx.lineWidth=2; ctx.save(); ctx.translate(x-8,y+10); ctx.rotate(-0.5); ctx.fillRect(0,0,10,65); ctx.strokeRect(0,0,10,65); ctx.restore();
- // head
- ctx.fillStyle='#ffe4b5'; ctx.beginPath(); ctx.arc(x+30,y+18,22,0,Math.PI*2); ctx.fill(); ctx.stroke();
- // hair white
- ctx.fillStyle='#ffffff'; ctx.strokeStyle='#000'; ctx.lineWidth=2.5;
- ctx.beginPath(); ctx.arc(x+30,y+8,28,Math.PI,0); ctx.fill(); ctx.stroke();
- ctx.beginPath(); ctx.arc(x+12,y+16,14,0,Math.PI*2); ctx.fill(); ctx.stroke();
- // eyes
- ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(x+22,y+20,5,0,Math.PI*2); ctx.arc(x+38,y+20,5,0,Math.PI*2); ctx.fill();
- ctx.fillStyle='#00e5ff'; ctx.beginPath(); ctx.arc(x+23,y+21,2.5,0,Math.PI*2); ctx.arc(x+39,y+21,2.5,0,Math.PI*2); ctx.fill();
- // sword hand
- ctx.save(); ctx.translate(x+45,y+55); ctx.rotate(player.attacking?0.6:-0.6);
- ctx.fillStyle=player.attacking?'#00ffff':'#ddd'; ctx.fillRect(-4,-5,8,50); ctx.strokeRect(-4,-5,8,50);
- if(player.attacking){ctx.shadowColor='#0ff'; ctx.shadowBlur=15; ctx.fillRect(-4,-5,8,50); ctx.shadowBlur=0;}
- ctx.restore();
- // legs
- ctx.fillStyle='#111'; ctx.fillRect(x+12,y+80,14,18); ctx.fillRect(x+32,y+80,14,18);
- ctx.restore();
-}
-function drawEnemies(){
- enemies.forEach(e=>{
-   let y=groundY()-e.h;
-   ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(e.x+e.w/2, groundY()-2, 18,4,0,0,Math.PI*2); ctx.fill();
-   ctx.font=`${e.h}px Arial`; ctx.fillText('🧟‍♂️', e.x, y+e.h-5);
- });
-}
-function drawParticles(){
- particles.forEach(p=>{ ctx.save(); ctx.globalAlpha=p.life; ctx.fillStyle=p.color; ctx.font=`bold ${p.size}px Arial`; ctx.fillText(p.txt, p.x, p.y); ctx.restore(); });
-}
-function update(){
- // player attack timer
- if(player.attacking>0) player.attacking--;
- // jump
- if(player.jumping>0){ player.jumpY=-Math.sin(player.jumping/10*Math.PI)*90; player.jumping--; if(player.jumping==0) player.jumpY=0; }
- // enemies
- enemies.forEach(e=>{ e.x-=e.speed; });
- enemies= enemies.filter(e=>e.x>-80);
- // particles
- particles.forEach(p=>{ p.y-=p.vy; p.life-=0.03; }); particles=particles.filter(p=>p.life>0);
- // collision with player
- enemies.forEach((e,i)=>{
-   if(Math.abs(e.x-player.x)<45 && player.jumpY==0){
-     player.hp-=8; addParticle(player.x, groundY()-80, '-8', '#f00', 20); enemies.splice(i,1);
-     document.getElementById('hpFill').style.width=player.hp+'%'; document.getElementById('hpTxt').innerText=player.hp+'/100';
-     if(player.hp<=0){alert('GAME OVER! Kills:'+player.kills); player.hp=85; player.kills=0; enemies=[]; document.getElementById('hpFill').style.width='85%'; document.getElementById('hpTxt').innerText='85/100';}
-   }
- });
-}
-function addParticle(x,y,txt,color,size){ particles.push({x,y,txt,color,size,vy:2+Math.random()*2,life:1}); }
-function loop(){
- drawBackground(); drawEnemies(); drawPlayer(); drawParticles(); update(); requestAnimationFrame(loop);
-}
-loop();
- // Controls
-function attack(){
- player.attacking=12; addParticle(player.x+60, groundY()-70, '💥', '#0ff', 30);
- enemies.forEach((e,i)=>{
-   if(Math.abs(e.x-player.x)<110){ addParticle(e.x, groundY()-70, 'HIT!', '#0f0', 18); enemies.splice(i,1); player.kills++; player.ult=Math.min(100,player.ult+10); if(player.ult>=100) document.getElementById('ult').innerText='ULT READY'; document.getElementById('coin').innerText=120+player.kills*5; }
- });
-}
-document.getElementById('atk').addEventListener('touchstart',e=>{e.preventDefault(); attack()});
-document.getElementById('atk').addEventListener('click',attack);
-document.getElementById('dash').addEventListener('touchstart',e=>{e.preventDefault(); player.x+=90; addParticle(player.x, groundY()-60, '💨', '#0af', 24)});
-document.getElementById('dash').addEventListener('click',()=>{player.x+=90});
-document.getElementById('ult').addEventListener('click',()=>{
- if(player.ult<100) return; player.ult=0; document.getElementById('ult').innerText='ULT 0%';
- enemies=[]; for(let i=0;i<8;i++) addParticle(Math.random()*W(), groundY()-Math.random()*100, '💥', '#ff0', 35);
- addParticle(W()/2, H()/2, 'DEVIL TRIGGER!!!', '#ff0', 32);
-});
- // joystick
-let joy=document.getElementById('joy'), stick=document.getElementById('stick'), active=false, startX=0;
-joy.addEventListener('touchstart',e=>{active=true; startX=e.touches[0].clientX});
-joy.addEventListener('touchmove',e=>{
- if(!active) return; e.preventDefault();
- let dx=e.touches[0].clientX-startX; stick.style.transform=`translate(calc(-50% + ${Math.max(-28,Math.min(28,dx))}px), -50%)`;
- if(dx<-10){player.x=Math.max(10,player.x-6); player.dir=-1} if(dx>10){player.x=Math.min(W()-80,player.x+6); player.dir=1}
-},{passive:false});
-joy.addEventListener('touchend',()=>{active=false; stick.style.transform='translate(-50%,-50%)';});
-// spawn
-setInterval(()=>{ enemies.push({x:W()+20,w:50,h:50,speed:2.5+Math.random()*2}); }, 1300);
-// keyboard for pc test
-addEventListener('keydown',e=>{ if(e.key=='ArrowLeft'){player.x-=10; player.dir=-1} if(e.key=='ArrowRight'){player.x+=10; player.dir=1} if(e.key==' '){attack()} if(e.key=='d'){player.x+=80} });
-</script>
-</body>
-  </html>
+let px=60, hp=85, maxHp=100, kills=0, level=1, ult=100, boss=null, bossHp=0;
+const player=document.getElementById('player'), game=document.getElementById('game'), hpFill=document.getElementById('hpFill'), hpTxt=document.getElementById('hpTxt'), lvEl=document.getElementById('lv'), lvName=document.getElementById('lvName'), ultBtn=document.getElementById('ult'), bossHpBar=document.getElementById('bossHp'), bossFill=document.getElementById('bossFill'), coinEl=document.getElementById('coin');
+const levels=[
+ {name:'RUINED AVENUE',bg:'linear-gradient(180deg,#ff8a2a,#7a2a00 60%,#1a0800)',enemies:['walker','walker','walker']},
+ {name:'RUINED AVENUE',bg:'linear-gradient(180deg,#ff8a2a,#7a2a00 60%,#1a0800)',enemies:['walker','runner']},
+ {name:'RUINED AVENUE - BOSS',bg:'linear-gradient(180deg,#ff5a00,#5a1a00)',boss:true,type:'mutant'},
+ {name:'DEAD SUBWAY',bg:'linear-gradient(180deg,#444,#111)',enemies:['runner','crawler']},
+ {name:'DEAD SUBWAY',bg:'linear-gradient(180deg,#333,#0a0a0
